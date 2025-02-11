@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/tabby.min.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.6.40">
+
+  <meta name="author" content="徐岩">
+  <title>0x01 线性回归</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="site_libs/revealjs/dist/theme/quarto-1995423331bd006d4636dd016e6b1082.css">
+  <link href="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+  <link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">0x01 线性回归</h1>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+徐岩 
+</div>
+</div>
+</div>
+
+</section>
+<section>
+<section id="一认识数据" class="title-slide slide level1 center">
+<h1>一、认识数据</h1>
+
+</section>
+<section id="例北京某小区房价数据" class="slide level2">
+<h2>例：北京某小区房价数据</h2>
+<div class="columns">
+<div class="column" style="width:70%;">
+<div id="9f7d2d43" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<div>
+<figure>
+<p><img data-src="linear_regression_files/figure-revealjs/cell-2-output-1.png" width="1188" height="503"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:30%;">
+<div id="tbl-planet-measures" class="cell" data-execution_count="2">
+<div class="cell-output cell-output-display cell-output-markdown" data-execution_count="11">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th></th>
+<th style="text-align: center;">area</th>
+<th style="text-align: left;">price</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td style="text-align: center;">62.9</td>
+<td style="text-align: left;">680</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td style="text-align: center;">44.3</td>
+<td style="text-align: left;">485</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td style="text-align: center;">57.4</td>
+<td style="text-align: left;">555</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td style="text-align: center;">62.4</td>
+<td style="text-align: left;">620</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td style="text-align: center;">57.4</td>
+<td style="text-align: left;">585</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td style="text-align: center;">…</td>
+<td style="text-align: left;">…</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div></div>
+<ul>
+<li>行、列</li>
+<li>特征（属性）</li>
+<li>标签</li>
+</ul>
+</section></section>
+<section>
+<section id="二问题与建模" class="title-slide slide level1 center">
+<h1>二、问题与建模</h1>
+
+</section>
+<section id="问题与假设" class="slide level2">
+<h2>问题与假设</h2>
+<ul>
+<li>问题：给定一组住房成交数据，每条数据有一个属性（面积 <span class="math inline">\(area\)</span> ），一个标签（价格 <span class="math inline">\(price\)</span> ），建立模型，能够实现给定一个新挂牌的房子的面积，预测它的成交价</li>
+<li>假设：所有<span class="math inline">\((area,price)\)</span>点在同一条直线附近</li>
+</ul>
+<div id="344e31db" class="cell" data-execution_count="3">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="linear_regression_files/figure-revealjs/cell-4-output-1.png" class="quarto-figure quarto-figure-center" width="1114" height="577"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="建模" class="slide level2">
+<h2>建模</h2>
+<ul>
+<li>训练集 <span class="math inline">\(T\)</span>：采集到的样本数据
+<ul>
+<li>一个训练数据记为 <span class="math inline">\((x,y)\)</span>，第 <span class="math inline">\(i\)</span> 个训练数据记为 <span class="math inline">\((x_i,y_i)\)</span></li>
+<li>训练集大小：<span class="math inline">\(m\)</span><br>
+</li>
+<li><span class="math inline">\(T=\{(x_1,y_1),(x_2,y_2),...,(x_m,y_m)\}=\{(x_i,y_i)\}\)</span></li>
+</ul></li>
+<li>决策函数假设：<span class="math inline">\(f(x)=kx+\)</span>，属性 <span class="math inline">\(x\)</span> 相应的预测结果 <span class="math inline">\(f(x)\)</span></li>
+<li>损失函数: <span class="math inline">\(L(k,b;T)\)</span>，在已知训练集 <span class="math inline">\(T\)</span> 的情况下关于决策函数参数 <span class="math inline">\(k,b\)</span> 的函数，用于量化参数的效果，即在训练集上预测值与真实值的差距，一般越小越好。
+<ul>
+<li><span class="math inline">\(L(k,b;T)=\frac{1}{m}((f(x_1)-y_1)^2+(f(x_2)-y_2)^2+...+(f(x_m)-y_m)^2)=\frac{1}{m}\sum\limits_{i=1}^m(f(x_i)-y_i)^2\)</span></li>
+</ul></li>
+<li>学习问题（最优化问题）：选择某种算法，如导数法、配方法、梯度下降法等，求解使得 <span class="math inline">\(L(k,b;T)\)</span> 取最小值时的参数 <span class="math inline">\(k,b\)</span></li>
+</ul>
+</section>
+<section id="建模-1" class="slide level2">
+<h2>建模</h2>
+
+<img data-src="pic.svg" style="width:70.0%" class="r-stretch"></section></section>
+<section>
+<section id="三单参数线性回归" class="title-slide slide level1 center">
+<h1>三、单参数线性回归</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>训练集 <span class="math inline">\(T=\{(1,2),(2,1),(3,4),(4,3)\}\)</span>， <span class="math inline">\(m=4\)</span></li>
+<li>决策函数：简单起见，假设 <span class="math inline">\(f(x)=kx\)</span></li>
+<li>损失函数: <span class="math display">\[L(k;T)=\frac{1}{4}((f(x_1)-y_1)^2+(f(x_2)-y_2)^2+(f(x_3)-y_3)^2+(f(x_4)-y_4)^2)\]</span></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="127" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 126;"><span id="cb1-127"><a></a><span class="kw">function</span> <span class="fu">f</span>(currentSlope<span class="op">,</span>t) {</span>
+<span id="cb1-128"><a></a>  </span>
+<span id="cb1-129"><a></a><span class="co">// 数据部分</span></span>
+<span id="cb1-130"><a></a><span class="kw">const</span> data <span class="op">=</span> [</span>
+<span id="cb1-131"><a></a>  {<span class="dt">x</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="dv">2</span>}<span class="op">,</span></span>
+<span id="cb1-132"><a></a>  {<span class="dt">x</span><span class="op">:</span> <span class="dv">2</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="dv">1</span>}<span class="op">,</span></span>
+<span id="cb1-133"><a></a>  {<span class="dt">x</span><span class="op">:</span> <span class="dv">3</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="dv">4</span>}<span class="op">,</span></span>
+<span id="cb1-134"><a></a>  {<span class="dt">x</span><span class="op">:</span> <span class="dv">4</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="dv">3</span>}</span>
+<span id="cb1-135"><a></a>]</span>
+<span id="cb1-136"><a></a></span>
+<span id="cb1-137"><a></a><span class="co">// 交互式滑动条</span></span>
+<span id="cb1-138"><a></a></span>
+<span id="cb1-139"><a></a></span>
+<span id="cb1-140"><a></a><span class="co">// 计算函数</span></span>
+<span id="cb1-141"><a></a><span class="kw">function</span> <span class="fu">getPredictions</span>(slope) {</span>
+<span id="cb1-142"><a></a>  <span class="cf">return</span> data<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> ({<span class="op">...</span>d<span class="op">,</span> <span class="dt">y_pred</span><span class="op">:</span> slope <span class="op">*</span> d<span class="op">.</span><span class="at">x</span>}))</span>
+<span id="cb1-143"><a></a>}</span>
+<span id="cb1-144"><a></a></span>
+<span id="cb1-145"><a></a><span class="kw">function</span> <span class="fu">computeLoss</span>(slope) {</span>
+<span id="cb1-146"><a></a>  <span class="cf">return</span> data<span class="op">.</span><span class="fu">reduce</span>((sum<span class="op">,</span> d) <span class="kw">=&gt;</span> sum <span class="op">+</span> (d<span class="op">.</span><span class="at">y</span> <span class="op">-</span> slope <span class="op">*</span> d<span class="op">.</span><span class="at">x</span>)<span class="op">**</span><span class="dv">2</span><span class="op">,</span> <span class="dv">0</span>) <span class="op">/</span> data<span class="op">.</span><span class="at">length</span></span>
+<span id="cb1-147"><a></a>}</span>
+<span id="cb1-148"><a></a></span>
+<span id="cb1-149"><a></a><span class="co">// 参数-损失曲线数据</span></span>
+<span id="cb1-150"><a></a><span class="kw">const</span> slopes <span class="op">=</span> <span class="bu">Array</span><span class="op">.</span><span class="fu">from</span>({<span class="dt">length</span><span class="op">:</span> <span class="dv">200</span>}<span class="op">,</span> (_<span class="op">,</span> i) <span class="kw">=&gt;</span> <span class="op">-</span><span class="dv">2</span> <span class="op">+</span> i <span class="op">*</span> <span class="dv">7</span><span class="op">/</span><span class="dv">200</span>)</span>
+<span id="cb1-151"><a></a><span class="kw">const</span> lossData <span class="op">=</span> slopes<span class="op">.</span><span class="fu">map</span>(s <span class="kw">=&gt;</span> ({ <span class="dt">slope</span><span class="op">:</span> s<span class="op">,</span> <span class="dt">loss</span><span class="op">:</span> <span class="fu">computeLoss</span>(s) }))</span>
+<span id="cb1-152"><a></a></span>
+<span id="cb1-153"><a></a><span class="kw">function</span> <span class="fu">mid</span>(pred) {</span>
+<span id="cb1-154"><a></a>    <span class="cf">return</span> data<span class="op">.</span><span class="fu">map</span>((num<span class="op">,</span>i)<span class="kw">=&gt;</span>({<span class="dt">x</span><span class="op">:</span>(num<span class="op">.</span><span class="at">x</span><span class="op">+</span>pred[i]<span class="op">.</span><span class="at">x</span>)<span class="op">/</span><span class="dv">2</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span>(num<span class="op">.</span><span class="at">y</span><span class="op">+</span>pred[i]<span class="op">.</span><span class="at">y_pred</span>)<span class="op">/</span><span class="dv">2</span><span class="op">,</span><span class="dt">gap</span><span class="op">:</span><span class="bu">Math</span><span class="op">.</span><span class="fu">abs</span>(num<span class="op">.</span><span class="at">y</span><span class="op">-</span>pred[i]<span class="op">.</span><span class="at">y_pred</span>)}))</span>
+<span id="cb1-155"><a></a>}</span>
+<span id="cb1-156"><a></a><span class="kw">let</span> m<span class="op">=</span><span class="fu">mid</span>(<span class="fu">getPredictions</span>(currentSlope))</span>
+<span id="cb1-157"><a></a><span class="co">// 第一个图：数据点和预测线</span></span>
+<span id="cb1-158"><a></a><span class="kw">const</span> plot1 <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb1-159"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb1-160"><a></a>     Plot<span class="op">.</span><span class="fu">frame</span>()<span class="op">,</span></span>
+<span id="cb1-161"><a></a>    Plot<span class="op">.</span><span class="fu">dot</span>(data<span class="op">,</span> { </span>
+<span id="cb1-162"><a></a>      <span class="dt">x</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span> </span>
+<span id="cb1-163"><a></a>      <span class="dt">y</span><span class="op">:</span> <span class="st">"y"</span><span class="op">,</span> </span>
+<span id="cb1-164"><a></a>      <span class="dt">fill</span><span class="op">:</span> <span class="st">"steelblue"</span><span class="op">,</span></span>
+<span id="cb1-165"><a></a>      <span class="dt">r</span><span class="op">:</span> <span class="dv">4</span></span>
+<span id="cb1-166"><a></a>    })<span class="op">,</span></span>
+<span id="cb1-167"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(<span class="fu">getPredictions</span>(currentSlope)<span class="op">.</span><span class="fu">concat</span>([{<span class="dt">x</span><span class="op">:</span><span class="dv">0</span><span class="op">,</span><span class="dt">y_pred</span><span class="op">:</span><span class="dv">0</span><span class="op">*</span>currentSlope}<span class="op">,</span>{<span class="dt">x</span><span class="op">:</span><span class="dv">5</span><span class="op">,</span><span class="dt">y_pred</span><span class="op">:</span><span class="dv">5</span><span class="op">*</span>currentSlope}]) <span class="op">,</span>{</span>
+<span id="cb1-168"><a></a>      <span class="dt">x</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span></span>
+<span id="cb1-169"><a></a>      <span class="dt">y</span><span class="op">:</span> <span class="st">"y_pred"</span><span class="op">,</span></span>
+<span id="cb1-170"><a></a>      <span class="dt">stroke</span><span class="op">:</span> <span class="st">"orange"</span><span class="op">,</span></span>
+<span id="cb1-171"><a></a>      <span class="dt">strokeWidth</span><span class="op">:</span> <span class="dv">2</span><span class="op">,</span></span>
+<span id="cb1-172"><a></a>    })<span class="op">,</span></span>
+<span id="cb1-173"><a></a>    </span>
+<span id="cb1-174"><a></a>    Plot<span class="op">.</span><span class="fu">text</span>(m<span class="op">,</span>{<span class="dt">x</span><span class="op">:</span><span class="st">"x"</span><span class="op">,</span><span class="dt">y</span><span class="op">:</span><span class="st">"y"</span><span class="op">,</span><span class="dt">text</span><span class="op">:</span>(d) <span class="kw">=&gt;</span> <span class="vs">`</span><span class="sc">${</span>d<span class="op">.</span><span class="at">gap</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="vs">`</span><span class="op">,</span><span class="dt">fontSize</span><span class="op">:</span><span class="dv">16</span><span class="op">,</span><span class="dt">dx</span><span class="op">:</span><span class="dv">18</span>})<span class="op">,</span></span>
+<span id="cb1-175"><a></a>    Plot<span class="op">.</span><span class="fu">text</span>([[<span class="dv">0</span><span class="op">,</span><span class="dv">0</span>]]<span class="op">,</span>{<span class="dt">dx</span><span class="op">:</span><span class="dv">29</span><span class="op">,</span><span class="dt">fontSize</span><span class="op">:</span><span class="dv">16</span><span class="op">,</span><span class="dt">text</span><span class="op">:</span>[<span class="vs">`y=</span><span class="sc">${</span>currentSlope<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="vs">x`</span>]})<span class="op">,</span></span>
+<span id="cb1-176"><a></a>    Plot<span class="op">.</span><span class="fu">text</span>([[<span class="dv">2</span><span class="op">,</span><span class="dv">7</span>]]<span class="op">,</span>{<span class="dt">dx</span><span class="op">:</span><span class="dv">30</span><span class="op">,</span><span class="dt">fontSize</span><span class="op">:</span><span class="dv">16</span><span class="op">,</span><span class="dt">text</span><span class="op">:</span>[ <span class="vs">`Cost=(</span><span class="sc">${</span>m[<span class="dv">0</span>]<span class="op">.</span><span class="at">gap</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="vs">^2+</span><span class="sc">${</span>m[<span class="dv">1</span>]<span class="op">.</span><span class="at">gap</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="vs">^2+</span><span class="sc">${</span>m[<span class="dv">2</span>]<span class="op">.</span><span class="at">gap</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="vs">^2+</span><span class="sc">${</span>m[<span class="dv">3</span>]<span class="op">.</span><span class="at">gap</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="vs">^2)/4=</span><span class="sc">${</span><span class="fu">computeLoss</span>(currentSlope)<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="vs">`</span>]})<span class="op">,</span></span>
+<span id="cb1-177"><a></a>    Plot<span class="op">.</span><span class="fu">ruleX</span>(data<span class="op">,</span> {</span>
+<span id="cb1-178"><a></a>      <span class="dt">x</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span></span>
+<span id="cb1-179"><a></a>      <span class="dt">y1</span><span class="op">:</span> <span class="st">"y"</span><span class="op">,</span></span>
+<span id="cb1-180"><a></a>      <span class="dt">y2</span><span class="op">:</span> d <span class="kw">=&gt;</span> currentSlope <span class="op">*</span> d<span class="op">.</span><span class="at">x</span><span class="op">,</span></span>
+<span id="cb1-181"><a></a>      <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">1.5</span><span class="op">,</span></span>
+<span id="cb1-182"><a></a>      <span class="dt">strokeOpacity</span><span class="op">:</span> <span class="fl">0.6</span><span class="op">,</span></span>
+<span id="cb1-183"><a></a>    })<span class="op">,</span></span>
+<span id="cb1-184"><a></a>    Plot<span class="op">.</span><span class="fu">axisX</span>({<span class="dt">fontSize</span><span class="op">:</span><span class="dv">16</span>})</span>
+<span id="cb1-185"><a></a>  ]<span class="op">,</span></span>
+<span id="cb1-186"><a></a>  <span class="dt">style</span><span class="op">:</span> {<span class="dt">fontSize</span><span class="op">:</span> <span class="st">"16px"</span>}<span class="op">,</span></span>
+<span id="cb1-187"><a></a>  <span class="dt">x</span><span class="op">:</span> { <span class="dt">domain</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="fl">4.9</span>]<span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span> }<span class="op">,</span></span>
+<span id="cb1-188"><a></a>  <span class="dt">y</span><span class="op">:</span> { <span class="dt">domain</span><span class="op">:</span> [<span class="op">-</span><span class="dv">2</span><span class="op">,</span> <span class="fl">7.9</span>]<span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"y"</span> }<span class="op">,</span></span>
+<span id="cb1-189"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">600</span><span class="op">,</span></span>
+<span id="cb1-190"><a></a>  <span class="dt">height</span><span class="op">:</span> <span class="dv">400</span><span class="op">,</span></span>
+<span id="cb1-191"><a></a>  </span>
+<span id="cb1-192"><a></a>  <span class="co">// title: md`df $k$`</span></span>
+<span id="cb1-193"><a></a><span class="co">//   title: `损失=(${m[0].gap.toFixed(2)}^2+${m[1].gap.toFixed(2)}^2+${m[2].gap.toFixed(2)}^2+${m[3].gap.toFixed(2)}^2)/4=${computeLoss(currentSlope).toFixed(2)}`</span></span>
+<span id="cb1-194"><a></a>})</span>
+<span id="cb1-195"><a></a></span>
+<span id="cb1-196"><a></a><span class="co">// 第二个图：损失函数曲线</span></span>
+<span id="cb1-197"><a></a><span class="kw">const</span> plot2 <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb1-198"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb1-199"><a></a>     Plot<span class="op">.</span><span class="fu">frame</span>()<span class="op">,</span></span>
+<span id="cb1-200"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(lossData<span class="op">,</span> {</span>
+<span id="cb1-201"><a></a>      <span class="dt">x</span><span class="op">:</span> <span class="st">"slope"</span><span class="op">,</span></span>
+<span id="cb1-202"><a></a>      <span class="dt">y</span><span class="op">:</span> <span class="st">"loss"</span><span class="op">,</span></span>
+<span id="cb1-203"><a></a>      <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#984ea3"</span><span class="op">,</span></span>
+<span id="cb1-204"><a></a>      <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">1.5</span></span>
+<span id="cb1-205"><a></a>    })<span class="op">,</span></span>
+<span id="cb1-206"><a></a>    Plot<span class="op">.</span><span class="fu">dot</span>([{ <span class="dt">slope</span><span class="op">:</span> currentSlope<span class="op">,</span> <span class="dt">loss</span><span class="op">:</span> <span class="fu">computeLoss</span>(currentSlope) }]<span class="op">,</span> {</span>
+<span id="cb1-207"><a></a>      <span class="dt">x</span><span class="op">:</span> <span class="st">"slope"</span><span class="op">,</span></span>
+<span id="cb1-208"><a></a>      <span class="dt">y</span><span class="op">:</span> <span class="st">"loss"</span><span class="op">,</span></span>
+<span id="cb1-209"><a></a>      <span class="dt">fill</span><span class="op">:</span> <span class="st">"#ff7f00"</span><span class="op">,</span></span>
+<span id="cb1-210"><a></a>      <span class="dt">r</span><span class="op">:</span> <span class="dv">6</span></span>
+<span id="cb1-211"><a></a>    })<span class="op">,</span></span>
+<span id="cb1-212"><a></a>    Plot<span class="op">.</span><span class="fu">axisX</span>({<span class="dt">fontSize</span><span class="op">:</span><span class="dv">16</span>})</span>
+<span id="cb1-213"><a></a>  ]<span class="op">,</span></span>
+<span id="cb1-214"><a></a>  <span class="dt">style</span><span class="op">:</span> {<span class="dt">fontSize</span><span class="op">:</span> <span class="st">"16px"</span>}<span class="op">,</span></span>
+<span id="cb1-215"><a></a>  <span class="dt">x</span><span class="op">:</span> { <span class="dt">domain</span><span class="op">:</span> [<span class="op">-</span><span class="dv">2</span><span class="op">,</span> <span class="dv">5</span>]<span class="op">,</span><span class="dt">label</span><span class="op">:</span> <span class="st">"参数 (k)"</span> }<span class="op">,</span></span>
+<span id="cb1-216"><a></a>  <span class="dt">y</span><span class="op">:</span> { <span class="dt">domain</span><span class="op">:</span> [<span class="op">-</span><span class="dv">10</span><span class="op">,</span> <span class="dv">125</span>]<span class="op">,</span><span class="dt">label</span><span class="op">:</span> <span class="st">"损失 "</span> }<span class="op">,</span></span>
+<span id="cb1-217"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">600</span><span class="op">,</span></span>
+<span id="cb1-218"><a></a>  <span class="dt">height</span><span class="op">:</span> <span class="dv">400</span></span>
+<span id="cb1-219"><a></a>})</span>
+<span id="cb1-220"><a></a>  </span>
+<span id="cb1-221"><a></a></span>
+<span id="cb1-222"><a></a>  <span class="cf">if</span>(t<span class="op">==</span><span class="dv">1</span>) <span class="cf">return</span> plot1</span>
+<span id="cb1-223"><a></a>  <span class="cf">else</span> <span class="cf">return</span> plot2</span>
+<span id="cb1-224"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="232" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 231;"><span id="cb2-232"><a></a><span class="fu">f</span>(currentSlope<span class="op">,</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-2" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb3" data-startfrom="238" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 237;"><span id="cb3-238"><a></a><span class="fu">f</span>(currentSlope<span class="op">,</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-3" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div></div>
+<!-- 参数$k$： -->
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb4" data-startfrom="248" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 247;"><span id="cb4-248"><a></a>viewof currentSlope <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="op">-</span><span class="dv">2</span><span class="op">,</span> <span class="dv">5</span>]<span class="op">,</span> {</span>
+<span id="cb4-249"><a></a><span class="co">//   label: "调整1斜率参数 (w)",</span></span>
+<span id="cb4-250"><a></a>  </span>
+<span id="cb4-251"><a></a>  <span class="dt">step</span><span class="op">:</span> <span class="fl">0.01</span><span class="op">,</span></span>
+<span id="cb4-252"><a></a>  <span class="dt">value</span><span class="op">:</span> <span class="dv">1</span>  <span class="co">// 初始值</span></span>
+<span id="cb4-253"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-4" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<ul>
+<li><p>训练集 <span class="math inline">\(T=\{(1,2),(2,1),(3,4),(4,3)\}\)</span>， <span class="math inline">\(m=4\)</span></p></li>
+<li><p>决策函数：简单起见，假设 <span class="math inline">\(f(x)=kx\)</span></p></li>
+<li><p>损失函数:<br>
+<span class="math display">\[
+\begin{align}
+L(k;T)&amp;=\frac{1}{4}((f(x_1)-y_1)^2+(f(x_2)-y_2)^2+(f(x_3)-y_3)^2+(f(x_4)-y_4)^2) \\&amp;=\frac{1}{4}((k-2)^2+(2k-1)^2+(3k-4)^2+(4k-3)^2)\\&amp;=\frac{1}{4}(30k^2-56k+30)
+\end{align}
+\]</span></p></li>
+<li><p>解决最优化问题：求使得 <span class="math inline">\(L(k;T)\)</span> 取得最小值的参数 <span class="math inline">\(k\)</span> 值</p>
+<ul>
+<li>方法1：解析法（配方法）。<span class="math inline">\(L(k;T)\)</span> 是关于 <span class="math inline">\(k\)</span> 的二次函数，易得当 <span class="math inline">\(k=\frac{56}{60} \approx 0.933\)</span> 时，<span class="math inline">\(L(k)\)</span> 取得最小值 <!-- - 导数法：$L(k)$ 的导数 $L'(x)=60k-56$，令 $L'(x)=0$，解得 $k=\frac{56}{60}  \approx 0.933$，由于 $L(k)$ 良好的性质，导数为0的点很容易求得，并且在导数为0的点取得最小值 --></li>
+</ul></li>
+</ul>
+</section>
+<section id="练习1" class="slide level2">
+<h2>练习1</h2>
+<ul>
+<li>给定训练集 <span class="math inline">\(T=\{(1,2),(2,3),(3,4),(4,2)\}\)</span>， <span class="math inline">\(m=4\)</span></li>
+<li>决策函数：假设 <span class="math inline">\(f(x)=kx\)</span></li>
+<li>写出损失函数，并求最优参数 <span class="math inline">\(k\)</span></li>
+</ul>
+</section>
+<section id="切线与导数" class="slide level2">
+<h2>切线与导数</h2>
+<ul>
+<li>割线：记 <span class="math inline">\(A\)</span> 为图像上一个定点，<span class="math inline">\(B\)</span> 为图像上 <span class="math inline">\(A\)</span> 附近的点，称直线 <span class="math inline">\(AB\)</span> 为图像的割线</li>
+<li>切线：当 <span class="math inline">\(B\)</span> 无限接近 <span class="math inline">\(A\)</span> 时，割线 <span class="math inline">\(AB\)</span> 无限接近经过 <span class="math inline">\(A\)</span> 的一条直线 <span class="math inline">\(l\)</span>，称 <span class="math inline">\(l\)</span> 为图在点 <span class="math inline">\(A\)</span> 处的切线。切线反映了切点附近函数值的变化趋势</li>
+<li>导数：切线的斜率</li>
+</ul>
+</section>
+<section id="例yfrac18x2-在点-a20.5-处的切线" class="slide level2">
+<h2>例：<span class="math inline">\(y=\frac{1}{8}x^2\)</span> 在点 <span class="math inline">\(A(2,0.5)\)</span> 处的切线</h2>
+<iframe scrolling="no" title="Lec1_1" src="https://www.geogebra.org/material/iframe/id/dhk5kqjr/width/1440/height/724/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/false/rc/false/ld/true/sdz/true/ctl/false" width="1440px" height="724px" style="border:0px;">
+</iframe>
+</section>
+<section id="例fxfrac18x2-在点-a20.5-处的切线斜率" class="slide level2">
+<h2>例：<span class="math inline">\(f(x)=\frac{1}{8}x^2\)</span> 在点 <span class="math inline">\(A(2,0.5)\)</span> 处的切线斜率</h2>
+<ul>
+<li>方法一：记 <span class="math inline">\(B\)</span> 点坐标为 <span class="math inline">\(B(2+\Delta x,f(2+\Delta x))\)</span>，然后计算直线 <span class="math inline">\(AB\)</span> 的斜率：<span class="math inline">\(\frac{f(2+\Delta x)-0.5}{2+\Delta x-2}\)</span>，给 <span class="math inline">\(\Delta x\)</span> 一个非常小的值，如 <span class="math inline">\(0.00001\)</span>，得到切线斜率 <span class="math inline">\(f'(2)\)</span> 的近似值，如 <span class="math inline">\(0.50000125\)</span>，如果觉得不满意，就把 <span class="math inline">\(\Delta x\)</span> 再小一些……</li>
+</ul>
+<div id="137802b1" class="cell" data-execution_count="4">
+<div class="cell-output cell-output-stdout">
+<pre><code>0.500001250003379</code></pre>
+</div>
+</div>
+<ul>
+<li><p>方法二：对 <span class="math inline">\(\frac{f(2+\Delta x)-0.5}{2+\Delta x-2}\)</span> 继续进行推导，<span class="math inline">\(\frac{f(2+\Delta x)-0.5}{2+\Delta x-2}=\frac{1}{2}+\frac{1}{8}\Delta x\)</span> ，当 <span class="math inline">\(\Delta x\rightarrow 0\)</span> 时，<span class="math inline">\(\frac{f(2+\Delta x)-0.5}{2+\Delta x-2}\rightarrow \frac{1}{2}\)</span>，可以认为 <span class="math inline">\(f'(2)=\frac{1}{2}\)</span></p></li>
+<li><p>事实上，<span class="math inline">\(f(x)=\frac{1}{8}x^2\)</span> 的过任意点 <span class="math inline">\(A(x,f(x))\)</span> 的切线斜率 <span class="math inline">\(f'(x)\)</span> 都可以按如上方法推导</p></li>
+<li><p>事实上，<span class="math inline">\(f(x)=ax^2+bx+c\)</span> 的过点 <span class="math inline">\(A(x,f(x))\)</span> 的切线斜率 <span class="math inline">\(f'(x)\)</span> 也可按如上方法推导</p></li>
+</ul>
+</section>
+<section id="练习2" class="slide level2">
+<h2>练习2</h2>
+<ul>
+<li><p>推导 <span class="math inline">\(f(x)=2x^2+3x-4\)</span> 在任意点 <span class="math inline">\(A(x,f(x))\)</span> 的导数</p></li>
+<li><p>推导 <span class="math inline">\(f(x)=ax^2+bx+c\)</span> 在任意点 <span class="math inline">\(A(x,f(x))\)</span> 的导数，其中 <span class="math inline">\(a,b,c\)</span> 为参数</p></li>
+<li><p>答案：</p>
+<ul>
+<li><span class="math inline">\(f'(x)=4x+3\)</span></li>
+<li><span class="math inline">\(f'(x)=2ax+b\)</span></li>
+</ul></li>
+</ul>
+</section>
+<section id="切线斜率与最值的关系" class="slide level2">
+<h2>切线斜率与最值的关系</h2>
+<iframe scrolling="no" title="Lec1_2" src="https://www.geogebra.org/material/iframe/id/ks3vkqct/width/1440/height/724/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/false/rc/false/ld/false/sdz/false/ctl/false" width="1440px" height="724px" style="border:0px;">
+</iframe>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>训练集 <span class="math inline">\(T=\{(1,2),(2,1),(3,4),(4,3)\}\)</span>， <span class="math inline">\(m=4\)</span></li>
+<li>决策函数：简单起见，假设 <span class="math inline">\(f(x)=kx\)</span></li>
+<li>损失函数: <span class="math inline">\(L(k;T)=\frac{1}{4}(30k^2-56k+30)\)</span></li>
+<li>方法2：导数法。<span class="math inline">\(L(k)\)</span> 的导数 <span class="math inline">\(L'(x)=15k-14\)</span>，令 <span class="math inline">\(L'(x)=0\)</span>，解得 <span class="math inline">\(k=\frac{14}{15}  \approx 0.933\)</span>。由于 <span class="math inline">\(L(k)\)</span> 良好的性质，导数为 <span class="math inline">\(0\)</span> 的点很容易求得，并且在导数为 <span class="math inline">\(0\)</span> 的点取得最小值</li>
+</ul>
+</section>
+<section id="梯度下降法" class="slide level2">
+<h2>梯度下降法</h2>
+<ul>
+<li>解析法（配方法）和导数法有局限性，有时损失函数<span class="math inline">\(L\)</span>不容易直接求得最值点，或者<span class="math inline">\(L'\)</span>不容易求得零点</li>
+<li>梯度下降法：从某一个选定的点出发，沿着梯度（导数）方向移动点，不断接近极值点的数值算法（有误差，但可控）。它是机器学习甚至更广泛领域常见的优化方法。</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div id="9bba0dba" class="cell" data-execution_count="5">
+<div class="cell-output cell-output-display">
+<div>
+<figure>
+<p><img data-src="linear_regression_files/figure-revealjs/cell-6-output-1.png" width="1310" height="485"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:40%;">
+<div id="tbl-planets" class="cell" data-execution_count="6">
+<div class="cell-output cell-output-display cell-output-markdown" data-execution_count="15">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Points</th>
+<th style="text-align: right;">x</th>
+<th style="text-align: right;">y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">P1</td>
+<td style="text-align: right;">-2</td>
+<td style="text-align: right;">65.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P2</td>
+<td style="text-align: right;">-0.24</td>
+<td style="text-align: right;">11.292</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P3</td>
+<td style="text-align: right;">0.464</td>
+<td style="text-align: right;">2.61872</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P4</td>
+<td style="text-align: right;">0.7456</td>
+<td style="text-align: right;">1.231</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P5</td>
+<td style="text-align: right;">0.85824</td>
+<td style="text-align: right;">1.00896</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P6</td>
+<td style="text-align: right;">0.903296</td>
+<td style="text-align: right;">0.973433</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P7</td>
+<td style="text-align: right;">0.921318</td>
+<td style="text-align: right;">0.967749</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div></div>
+</section>
+<section id="梯度下降法-1" class="slide level2">
+<h2>梯度下降法</h2>
+<ul>
+<li>考虑从一个点 <span class="math inline">\(x_0\)</span> 开始逐步向最值点移动，最终能够到达（或无限接近）最值点
+<ul>
+<li>选哪个点作为起点 <span class="math inline">\(x_0\)</span> ？任意点？</li>
+<li>每次步长如何确定？<span class="math display">\[ x_{k+1}=x_k-\alpha f'(x_k) \]</span></li>
+<li>算法为什么是正确的？</li>
+</ul></li>
+<li>秘诀：切线指方向，导数定步长</li>
+<li>见house.xlsx演示</li>
+</ul>
+</section>
+<section id="梯度下降法收敛性证明" class="slide level2">
+<h2>梯度下降法收敛性证明</h2>
+<p>以 <span class="math inline">\(f(x)=x^2\)</span> 为例，任选 <span class="math inline">\(x_0\)</span> 为起点，更新规则 <span class="math inline">\(x_{k+1}=x_k-\alpha f'(x_k)(0\leqslant \alpha&lt;\frac 1 2)\)</span>，随着<span class="math inline">\(k\)</span>的增大，<span class="math inline">\(f(x_k)\rightarrow f(x^*)\)</span>，其中 <span class="math inline">\(x^*\)</span> 为 <span class="math inline">\(f(x)\)</span> 取得最小值的点</p>
+<ul>
+<li>由梯度下降更新公式：<span class="math inline">\(x_{k+1}=x_k-\alpha f'(x_k) =x_k-2\alpha  x_k=x_k (1-2 \alpha )\)</span></li>
+<li><span class="math inline">\(x_k =x_{k-1}(1-2\alpha)=x_{k-2}(1-2\alpha)^2=x_{k-3}(1-2\alpha)^3=...=x_{0}(1-2\alpha)^k\)</span></li>
+<li>由 <span class="math inline">\(f(x)\)</span>的凸性，<span class="math inline">\(\forall a,b\)</span>，<span class="math inline">\(f(b)\geq f(a)+f'(a)(b-a)\)</span>（可将 <span class="math inline">\(f(x)=x^2\)</span> 代入验证），取 <span class="math inline">\(b=x^{*},a=x_k\)</span>，则有 <span class="math display">\[\begin{align}
+f(x_k)- f(x^{*})&amp;\leqslant f'(x_k)(x_k-x^{*})\\
+&amp;=2x_k(x_k-x^*)\\
+&amp;=2\left((x_k-\frac{1}{2} x^*)^2-\frac{1}{4} (x^*)^2\right)
+\end{align}
+\]</span></li>
+<li>随着 <span class="math inline">\(k\)</span> 的增大，由于 <span class="math inline">\(0\leqslant (1-2\alpha)&lt;1\)</span>，所以当 <span class="math inline">\(x_k\rightarrow 0\)</span> 时，<span class="math inline">\(2\left((x_k-\frac{1}{2} x^*)^2-\frac{1}{4} (x^*)^2\right)\rightarrow 0\)</span>，而 <span class="math inline">\(f(x_k)-f(x^*) \geqslant 0\)</span>，所以 <span class="math inline">\(f(x_k)\rightarrow f(x^*)\)</span></li>
+</ul>
+</section>
+<section id="练习3" class="slide level2">
+<h2>练习3</h2>
+<p>使用梯度下降方法计算 <span class="math inline">\(f(x)=2x^2+3x-4\)</span> 的最值，任选 <span class="math inline">\(\alpha\)</span> 和 <span class="math inline">\(x_0\)</span>，并与配方法和导数法得到的结果进行比较</p>
+</section>
+<section id="思考题" class="slide level2">
+<h2>思考题</h2>
+<p>以 <span class="math inline">\(f(x)=ax^2+bx+c(a&gt;0)\)</span> 为例，任选 <span class="math inline">\(x_0\)</span> 为起点，更新规则 <span class="math inline">\(x_{k+1}=x_k-\alpha f'(x_k)(0\leqslant \alpha&lt;\frac{1}{2a})\)</span>，请证明：随着 <span class="math inline">\(k\)</span> 的增大，<span class="math inline">\(f(x_k)\rightarrow f(x^*)\)</span>，其中 <span class="math inline">\(x^*\)</span> 为 <span class="math inline">\(f(x)\)</span> 取得最小值的点</p>
+</section>
+<section id="动手计算" class="slide level2">
+<h2>动手计算</h2>
+<ul>
+<li>损失函数 <span class="math inline">\(L(k;T)\)</span> 推导： <span class="math display">\[\begin{align}
+L(k;T)&amp;=\frac{1}{m}((f(x_1)-y_1)^2+(f(x_2)-y_2)^2+...+(f(x_m)-y_m)^2)\\&amp;=\frac{1}{m}\sum\limits_{i=1}^m(f(x_i)-y_i)^2=\frac{1}{m}\sum\limits_{i=1}^m(kx_i-y_i)^2\\&amp;=\frac{1}{m}\sum\limits_{i=1}^m(k^2x_i^2-2kx_iy_i+y_i^2)\\&amp;=\frac{1}{m}((\sum\limits_{i=1}^mx_i^2)k^2+(-2\sum\limits_{i=1}^mx_iy_i)k+\sum\limits_{i=1}^my_i^2)
+\end{align}
+\]</span></li>
+</ul>
+</section>
+<section id="动手计算-1" class="slide level2">
+<h2>动手计算</h2>
+<ul>
+<li><span class="math inline">\(L(k;T)=\frac{1}{m}((\sum\limits_{i=1}^mx_i^2)k^2+(-2\sum\limits_{i=1}^mx_iy_i)k+\sum\limits_{i=1}^my_i^2)\)</span></li>
+<li><span class="math inline">\(L'(k;T)=\frac{1}{m}(2(\sum\limits_{i=1}^mx_i^2)k-2\sum\limits_{i=1}^mx_iy_i)\)</span>，<span class="math inline">\(k^*=\frac{\sum_{i=1}^mx_iy_i}{\sum_{i=1}^mx_i^2}\)</span></li>
+<li>方法一：手动计算（只要有足够的时间和耐心）</li>
+<li>方法二：Excel
+<ul>
+<li>借助公式辅助手动计算（略）</li>
+<li>调用公式；使用散点图</li>
+</ul></li>
+<li>方法三：python
+<ul>
+<li>编程模拟计算过程：解析法和导数法；梯度下降法</li>
+<li>调用现成的工具（如sklearn）</li>
+</ul></li>
+</ul>
+</section>
+<section id="动手计算excel直接调用公式法" class="slide level2">
+<h2>动手计算——Excel直接调用公式法</h2>
+<ul>
+<li>在数据旁边选择一个空单元格，输入<code>=LINEST(B2:B28,A2:A28,FALSE)</code>
+<ul>
+<li><code>=</code>表示此单元格内容为公式</li>
+<li><code>LINEST</code>表示求解线性回归参数的函数</li>
+<li><code>B2:B28</code>处是 <span class="math inline">\(y\)</span> 值的范围</li>
+<li><code>A2:A28</code>处是 <span class="math inline">\(x\)</span> 值的范围</li>
+<li><code>FALSE</code>表示强制截距 <span class="math inline">\(b\)</span> 为 <span class="math inline">\(0\)</span></li>
+</ul></li>
+</ul>
+
+<img data-src="excel1.png" class="quarto-figure quarto-figure-center r-stretch" style="border: 1px solid black;"></section>
+<section id="动手计算excel散点图添加趋势线法" class="slide level2">
+<h2>动手计算——Excel散点图添加趋势线法</h2>
+<ul>
+<li>选中所有数据（包括列标题）</li>
+<li>点击“插入”——“散点图”</li>
+<li>点击图中任意一点（所有点将被选中）</li>
+<li>右键选择“添加趋势线”</li>
+<li>在右侧弹出的“设置趋势线格式”中勾选“设置截距”和“显示公式”</li>
+</ul>
+
+<img data-src="excel2.png" class="quarto-figure quarto-figure-center r-stretch" style="border: 1px solid black;"></section>
+<section id="python实现梯度下降" class="slide level2">
+<h2>python实现梯度下降</h2>
+<ul>
+<li>以计算 <span class="math inline">\(f(x)=\frac{1}{4}(30k^2-56k+30)\)</span> 的最小值为例</li>
+<li>代码中<code>#</code>及之后的内容是注释，不会被运行</li>
+<li><code>a=b</code>是一个动作，可以不严谨地理解为把<code>b</code>代表的内容“传递”给<code>a</code>，即 <span class="math inline">\(a\leftarrow b\)</span></li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a></a><span class="kw">def</span> f(x): <span class="co"># 定义f(x)的计算方法</span></span>
+<span id="cb6-2"><a></a>    <span class="cf">return</span> (<span class="dv">30</span><span class="op">*</span>k<span class="op">*</span>k<span class="op">-</span><span class="dv">56</span><span class="op">*</span>k<span class="op">+</span><span class="dv">30</span>)<span class="op">/</span><span class="dv">4</span></span>
+<span id="cb6-3"><a></a></span>
+<span id="cb6-4"><a></a><span class="kw">def</span> ff(x): <span class="co"># 定义f'(x)的计算方法</span></span>
+<span id="cb6-5"><a></a>    <span class="cf">return</span> (<span class="dv">60</span><span class="op">*</span>k<span class="op">-</span><span class="dv">56</span>)<span class="op">/</span><span class="dv">4</span></span>
+<span id="cb6-6"><a></a></span>
+<span id="cb6-7"><a></a>x<span class="op">=-</span><span class="dv">2</span> <span class="co"># x0=-2</span></span>
+<span id="cb6-8"><a></a></span>
+<span id="cb6-9"><a></a><span class="cf">while</span> <span class="va">True</span>: <span class="co"># 重复以下过程</span></span>
+<span id="cb6-10"><a></a>    x_<span class="op">=</span>x<span class="op">-</span><span class="fl">0.04</span><span class="op">*</span>ff(x) <span class="co"># 计算下一个点，alpha=0.04</span></span>
+<span id="cb6-11"><a></a>    <span class="cf">if</span> <span class="bu">abs</span>(f(x_)<span class="op">-</span>f(x))<span class="op">&lt;</span><span class="fl">1e-10</span>: <span class="co"># 如果两个点的函数值很接近(差的绝对值小于10^(-10))，则停止</span></span>
+<span id="cb6-12"><a></a>        <span class="cf">break</span></span>
+<span id="cb6-13"><a></a>    x<span class="op">=</span>x_ <span class="co"># 更新当前点</span></span>
+<span id="cb6-14"><a></a></span>
+<span id="cb6-15"><a></a><span class="bu">print</span>(<span class="st">"the best x and f(x):"</span>,x,f(x)) <span class="co"># 输出最后的x,f(x)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="python实现线性回归" class="slide level2">
+<h2>python实现线性回归</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb7-2"><a></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb7-3"><a></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb7-4"><a></a>df<span class="op">=</span>pd.read_csv(<span class="st">"house.csv"</span>)  <span class="co"># house.csv是数据源</span></span>
+<span id="cb7-5"><a></a>x<span class="op">=</span>df[[<span class="st">"area"</span>]] <span class="co"># area指明x列标题</span></span>
+<span id="cb7-6"><a></a>y<span class="op">=</span>df[<span class="st">"price"</span>] <span class="co"># price指明y列标题</span></span>
+<span id="cb7-7"><a></a>model<span class="op">=</span>LinearRegression(fit_intercept<span class="op">=</span><span class="va">False</span>) <span class="co"># 调用线性回归模型，且设置截距b=0</span></span>
+<span id="cb7-8"><a></a>model.fit(x,y) <span class="co"># 用把数据传递模型</span></span>
+<span id="cb7-9"><a></a>k<span class="op">=</span>model.coef_ <span class="co"># 获取斜率结果</span></span>
+<span id="cb7-10"><a></a><span class="bu">print</span>(<span class="st">"斜率"</span>,model.coef_[<span class="dv">0</span>])</span>
+<span id="cb7-11"><a></a></span>
+<span id="cb7-12"><a></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb7-13"><a></a><span class="kw">def</span> f(x):</span>
+<span id="cb7-14"><a></a>    <span class="cf">return</span> k<span class="op">*</span>x</span>
+<span id="cb7-15"><a></a>fig<span class="op">=</span>plt.figure(figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">9</span>))</span>
+<span id="cb7-16"><a></a>ax <span class="op">=</span> fig.add_subplot(<span class="dv">111</span>)</span>
+<span id="cb7-17"><a></a>x<span class="op">=</span>np.arange(<span class="bu">min</span>(x[<span class="st">"area"</span>]),<span class="bu">max</span>(x[<span class="st">"area"</span>]),<span class="fl">0.01</span>)</span>
+<span id="cb7-18"><a></a>y<span class="op">=</span>f(x)</span>
+<span id="cb7-19"><a></a>ax.plot(x,y)</span>
+<span id="cb7-20"><a></a>x<span class="op">=</span><span class="bu">list</span>(df[<span class="st">"area"</span>])</span>
+<span id="cb7-21"><a></a>y<span class="op">=</span><span class="bu">list</span>(df[<span class="st">"price"</span>])</span>
+<span id="cb7-22"><a></a>ax.scatter(x,y)</span>
+<span id="cb7-23"><a></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column" style="width:50%;">
+<div id="f6fac7ed" class="cell" data-execution_count="7">
+<div class="cell-output cell-output-stdout">
+<pre><code>斜率 10.114737008812858</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure>
+<p><img data-src="linear_regression_files/figure-revealjs/cell-8-output-2.png" width="1170" height="485"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section class="slide level2">
+
+</section></section>
+<section>
+<section id="四双参数线性回归" class="title-slide slide level1 center">
+<h1>四、双参数线性回归</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>训练集 <span class="math inline">\(T=\{(1,2),(2,1),(3,4),(4,3)\}\)</span>， <span class="math inline">\(m=4\)</span></li>
+<li>决策函数：假设 <span class="math inline">\(f(x)=kx+b\)</span></li>
+<li>损失函数: <span class="math display">\[\begin{align}
+L(k,b;T)&amp;=\frac{1}{4}((f(x_1)-y_1)^2+(f(x_2)-y_2)^2+(f(x_3)-y_3)^2+(f(x_4)-y_4)^2)\\&amp;=\frac{1}{4}((k+b-2)^2+(2k+b-1)^2+(3k+b-4)^2+(4k+b-3)^2)\\&amp;=\frac{1}{4}(30 k^2+ 4 b^2+ 20  kb- 56 k - 20 b  +30   )
+\end{align}
+\]</span></li>
+<li>二元二次函数 <span class="math inline">\(f(x,y)=\frac{1}{4}(30 x^2+ 4 y^2+ 20xy- 56x - 20y  +30   )\)</span> 最值问题
+<ul>
+<li>配方法</li>
+<li>导数法</li>
+<li>梯度下降法</li>
+</ul></li>
+</ul>
+</section>
+<section id="配方法" class="slide level2">
+<h2>配方法</h2>
+<p><span class="math display">\[\begin{align}
+f(x,y)&amp;=\frac{1}{4}(30x^2+4y^2+20xy-56x-20y+30)\\&amp;=\frac{1}{4}((5x+2y-5)^2+5x^2-6x+5)
+\end{align}
+\]</span></p>
+<ul>
+<li>当 <span class="math inline">\(x=\frac{6}{10}\)</span> 时，<span class="math inline">\(5x^2-6x+5\)</span> 取得最小值，<span class="math inline">\(y=1\)</span> 时，<span class="math inline">\((5x+2y-5)^2\)</span> 可取到 <span class="math inline">\(0\)</span></li>
+<li>因此最小值点为 <span class="math inline">\((\frac{3}{5},1)\)</span>，最小值为 <span class="math inline">\(\frac{4}{5}\)</span></li>
+</ul>
+</section>
+<section id="练习" class="slide level2">
+<h2>练习</h2>
+<ul>
+<li>用配方法求 <span class="math inline">\(f(x,y)=\frac{1}{2} x^{2}+\frac{1}{4} y^{2}+\frac{1}{4}x y-2 x-y+3\)</span> 的最小值</li>
+</ul>
+</section>
+<section id="导数法" class="slide level2">
+<h2>导数法</h2>
+<p>认识 <span class="math inline">\(f(x,y)=\frac{1}{4}(30x^2+4y^2+20xy-56x-20y+30)\)</span>图像 <iframe scrolling="no" title="Lec1_3" src="https://www.geogebra.org/material/iframe/id/vuxaqaju/width/1440/height/724/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/false/rc/true/ld/true/sdz/true/ctl/false" width="1440px" height="724px" style="border:0px;"> </iframe></p>
+</section>
+<section id="导数法-1" class="slide level2">
+<h2>导数法</h2>
+<iframe scrolling="no" title="Lec_4" src="https://www.geogebra.org/material/iframe/id/ex7bmepf/width/1440/height/724/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/false/rc/true/ld/true/sdz/true/ctl/false" width="1440px" height="724px" style="border:0px;">
+</iframe>
+</section>
+<section id="导数法-2" class="slide level2">
+<h2>导数法</h2>
+<ul>
+<li><p>在已知 <span class="math inline">\(y\)</span> 的情况下，<span class="math inline">\(f(x,y)\)</span> 可以看作以 <span class="math inline">\(x\)</span> 为自变量的一元二次函数 <span class="math inline">\(f(x;y)\)</span>，因此 <span class="math inline">\(f(x;y)\)</span> 有关于 <span class="math inline">\(x\)</span> 的导数（或在 <span class="math inline">\(x\)</span> 方向的切线），记为 <span class="math inline">\(f'(x;y)\)</span>（或 <span class="math inline">\(f_x(x,y)\)</span>、<span class="math inline">\(\frac{\partial f}{\partial x}\)</span>）</p></li>
+<li><p>在已知 <span class="math inline">\(x\)</span> 的情况下，类似地，有<span class="math inline">\(f'(y;x)\)</span>（或 <span class="math inline">\(f_y(x,y)\)</span>、<span class="math inline">\(\frac{\partial f}{\partial y}\)</span>）</p></li>
+<li><p>对于 <span class="math inline">\(f(x,y)=\frac{1}{4}(30 x^2+ 4 y^2+ 20xy- 56x - 20y  +30   )\)</span></p>
+<ul>
+<li><span class="math inline">\(f_x(x,y)=\frac{1}{4}(60x+20y-56)\)</span></li>
+<li><span class="math inline">\(f_y(x,y)=\frac{1}{4}(8y+20x-20)\)</span></li>
+<li>令 <span class="math inline">\(f_x(x,y)=0\)</span>且<span class="math inline">\(f_y(x,y)=0\)</span>，得到 <span class="math inline">\(x=\frac{3}{5},y=1\)</span></li>
+</ul></li>
+</ul>
+</section>
+<section id="练习-1" class="slide level2">
+<h2>练习</h2>
+<p>用导数法求 <span class="math inline">\(f(x,y)=\frac{1}{2} x^{2}+\frac{1}{4} y^{2}+\frac{1}{4}x y-2 x-y+3\)</span> 的最小值</p>
+</section>
+<section id="梯度下降法-2" class="slide level2">
+<h2>梯度下降法</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div id="5ccef75e" class="cell" data-execution_count="8">
+<div class="cell-output cell-output-display">
+<div>
+<figure>
+<p><img data-src="linear_regression_files/figure-revealjs/cell-9-output-1.png" width="972" height="750"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:40%;">
+<ul>
+<li>切线指方向，导数定步长</li>
+<li>任选 <span class="math inline">\((x_0,y_0)\)</span> ，每次同时更新： <span class="math display">\[
+\begin{cases}
+x_{k+1}=x_k-\alpha f_x(x_k,y_k)\\
+y_{k+1}=y_k-\alpha f_y(x_k,y_k)
+\end{cases}
+\]</span></li>
+<li>可以证明，双参数线性回归损失函数在选取合适的 <span class="math inline">\(\alpha\)</span> 时，可以收敛到最小值</li>
+<li>更一般地，二元二次函数<span class="math inline">\(f(x,y)\)</span>满足一定的条件（凸性、可微与Lipschitz连续性）时，梯度下降可以收敛最小值</li>
+</ul>
+</div></div>
+</section>
+<section id="动手计算-2" class="slide level2">
+<h2>动手计算</h2>
+<ul>
+<li><span class="math inline">\(L(k,b;T) =  (\sum_{i=1}^{m} x_i^2)k^2 + mb^2+ 2( \sum_{i=1}^{m} x_i)k b - 2 (\sum_{i=1}^{m}x_i y_i)k- 2 (\sum_{i=1}^{m} y_i)b  +\sum_{i=1}^{m} y_i^2\)</span></li>
+<li>记 <span class="math inline">\(A=\sum x_i^2,B=\sum x_i,C=\sum y_i,D=\sum x_iy_i,E=\sum y_i^2,\bar{x}=\frac{B}{m}=\frac{\sum x_i}{m},\bar{y}=\frac{C}{m}=\frac{\sum y_i}{m}\)</span></li>
+<li><span class="math inline">\(L(k,b;T) =Ak^2+mb^2+2Bkb-2Dk-2Cb+E\)</span>，先对 <span class="math inline">\(b\)</span> 项配方，再对 <span class="math inline">\(k\)</span> 项配方，得
+<ul>
+<li><span class="math inline">\(L(k,b;T)=m(b+\frac{Bk-C}{m})^2+(\frac{mA-B^2}{m})(k+\frac{BC-Dm}{mA-B^2})^2+\text{常数项}\)</span></li>
+<li><span class="math inline">\(k^*=\frac{Dm-BC}{mA-B^2}=\frac{\sum x_iy_i-m\bar{x}\bar{y}}{\sum x_i^2-m\bar{x}^2},b^*=\bar{y}-\bar{x}k\)</span></li>
+</ul></li>
+<li><span class="math inline">\(L_k(k,b;T)=2Ak+2Bb-2D=2(Ak+Bb-D)\)</span></li>
+<li><span class="math inline">\(L_b(k,b;T)=2mb+2Bk-2C=2(Bk+mb-C)\)</span></li>
+</ul>
+</section>
+<section id="动手计算-3" class="slide level2">
+<h2>动手计算</h2>
+<ul>
+<li>方法一：手动计算（只要有足够的时间和耐心）</li>
+<li>方法二：Excel
+<ul>
+<li>借助公式辅助手动计算（略）</li>
+<li>调用公式（FALSE改为TRUE）；使用散点图（不设置截距）</li>
+</ul></li>
+<li>方法三：python
+<ul>
+<li>编程模拟计算过程：解析法和导数法；梯度下降法</li>
+<li>调用现成的工具（如sklearn，<code>fit_intercept=True</code>）</li>
+</ul></li>
+</ul>
+</section>
+<section id="python实现梯度下降法" class="slide level2">
+<h2>python实现梯度下降法</h2>
+<p>以计算 <span class="math inline">\(f(x,y)=\frac{1}{4}(30x^2+4y^2+20xy-56x-20y+30)\)</span> 最小值为例</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb9-2"><a></a><span class="kw">def</span> f(x,y):</span>
+<span id="cb9-3"><a></a>    <span class="cf">return</span> (<span class="dv">30</span><span class="op">*</span>x<span class="op">**</span><span class="dv">2</span> <span class="op">+</span><span class="dv">4</span><span class="op">*</span> y<span class="op">**</span><span class="dv">2</span><span class="op">+</span><span class="dv">20</span><span class="op">*</span>x<span class="op">*</span>y<span class="op">-</span><span class="dv">56</span><span class="op">*</span>x<span class="op">-</span><span class="dv">20</span><span class="op">*</span>y<span class="op">+</span><span class="dv">30</span>)<span class="op">/</span><span class="dv">4</span></span>
+<span id="cb9-4"><a></a><span class="kw">def</span> g(x,y): <span class="co"># f在x方向的偏导数</span></span>
+<span id="cb9-5"><a></a>    <span class="cf">return</span> (<span class="dv">60</span><span class="op">*</span>x<span class="op">+</span><span class="dv">20</span><span class="op">*</span>y<span class="op">-</span><span class="dv">56</span>)<span class="op">/</span><span class="dv">4</span></span>
+<span id="cb9-6"><a></a><span class="kw">def</span> h(x,y): <span class="co"># f在y方向的偏导数</span></span>
+<span id="cb9-7"><a></a>    <span class="cf">return</span> (<span class="dv">8</span><span class="op">*</span>y<span class="op">+</span><span class="dv">20</span><span class="op">*</span>x<span class="op">-</span><span class="dv">20</span>)<span class="op">/</span><span class="dv">4</span></span>
+<span id="cb9-8"><a></a></span>
+<span id="cb9-9"><a></a>alpha<span class="op">=</span><span class="fl">0.005</span> <span class="co"># 学习率</span></span>
+<span id="cb9-10"><a></a>x,y<span class="op">=</span><span class="dv">1</span>,<span class="dv">4</span></span>
+<span id="cb9-11"><a></a><span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb9-12"><a></a>    x_,y_<span class="op">=</span>x<span class="op">-</span>alpha<span class="op">*</span>g(x,y),y<span class="op">-</span>alpha<span class="op">*</span>h(x,y)</span>
+<span id="cb9-13"><a></a>    <span class="cf">if</span> <span class="bu">abs</span>(f(x,y)<span class="op">-</span>f(x_,y_))<span class="op">&lt;</span><span class="fl">1e-7</span>:</span>
+<span id="cb9-14"><a></a>        <span class="cf">break</span></span>
+<span id="cb9-15"><a></a>    x,y<span class="op">=</span>x_,y_</span>
+<span id="cb9-16"><a></a></span>
+<span id="cb9-17"><a></a><span class="bu">print</span>(<span class="st">"the best x,y and f(x,y):"</span>,x,y,f(x,y)) <span class="co"># 输出最后的x,f(x)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<!-- ## 如果是$y=kx+b$呢？
+
+
+
+
+
+:::::{.cell}
+
+```{.js .cell-code .hidden startFrom="744" source-offset="0"}
+function g(currentSlope1,currentSlope2,t) {
+  
+// 数据部分
+const data = [
+  {x: 1, y: 2},
+  {x: 2, y: 1},
+  {x: 3, y: 4},
+  {x: 4, y: 3}
+]
+
+// 交互式滑动条
+
+
+// 计算函数
+function getPredictions(slope1,slope2) {
+  return data.map(d => ({...d, y_pred: slope1 * d.x+slope2}))
+}
+
+function computeLoss(slope1,slope2) {
+  return data.reduce((sum, d) => sum + (d.y - slope1 * d.x-slope2)**2, 0) / data.length
+}
+
+// 参数-损失曲线数据
+// const slopes = Array.from({length: 200}, (_, i) => -2 + i * 7/200)
+// const lossData = slopes.map(s => ({ slope: s, loss: computeLoss(s) }))
+
+// 第一个图：数据点和预测线
+const plot1 = Plot.plot({
+  marks: [
+    Plot.dot(data, { 
+      x: "x", 
+      y: "y", 
+      fill: "steelblue",
+      r: 8 
+    }),
+    Plot.line(getPredictions(currentSlope1,currentSlope2), {
+      x: "x",
+      y: "y_pred",
+      stroke: "orange",
+      strokeWidth: 2
+    }),
+    Plot.ruleX(data, {
+      x: "x",
+      y1: "y",
+      y2: d => currentSlope1 * d.x+currentSlope2,
+      stroke: d => (d.y - currentSlope1 * d.x+currentSlope2) > 0 ? "#4daf4a" : "#e41a1c",
+      strokeWidth: 2,
+      strokeOpacity: 0.6
+    })
+  ],
+  x: { domain: [0, 5], label: "输入特征 (X)" },
+  y: { domain: [-3, 6], label: "目标值 (Y)" },
+  width: 600,
+  height: 300,
+//   title: `当前参数: w = ${currentSlope.toFixed(2)} | 损失值: ${computeLoss(currentSlope).toFixed(2)}`
+})
+
+// 第二个图：损失函数曲线
+const plot2 = Plot.plot({
+    aspectRatio: 1,
+    color: {
+        type: "diverging",
+        legend: true,
+        label: "Elevation (m)"
+  },
+  marks: [
+   Plot.contour({
+        fill: computeLoss,
+        stroke: "black",
+        x1: -0.0,
+        x2: 1.7,
+        y1: -2,
+        y2: 2.5
+        }),
+    Plot.dot([{ slope: currentSlope1, loss: currentSlope2 }], {
+      x: "slope",
+      y: "loss",
+      fill: "#ff7f00",
+      r: 6
+    }),
+   Plot.text([{
+  x: currentSlope1,
+  y: currentSlope2,
+  text: `(${currentSlope1.toFixed(1)}, ${currentSlope2.toFixed(1)},${computeLoss(currentSlope1,currentSlope2).toFixed(2)})`,
+  // dx: currentSlope1 > 8 ? -40 : 12, // 靠近右边界时左移文本
+  // dy: currentSlope2 > 8 ? 10 : -8   // 靠近上边界时下移文本
+}], {x:"x",y:"y",text: (d) => d.text,
+  dy: -6
+})
+  ],
+  x: { label: "斜率参数 (w)" },
+  y: { label: "均方误差损失 (MSE)" },
+  width: 700,
+  height: 500
+})
+  
+
+  if(t==1) return plot1
+  else return plot2
+}
+```
+
+::::{.cell-output .cell-output-display}
+
+:::{#ojs-cell-5 nodetype="declaration"}
+:::
+::::
+:::::
+
+
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+
+
+:::::{.cell}
+
+```{.js .cell-code .hidden startFrom="851" source-offset="0"}
+g(currentSlope1,currentSlope2,1)
+```
+
+::::{.cell-output .cell-output-display}
+
+:::{#ojs-cell-6 nodetype="expression"}
+:::
+::::
+:::::
+
+
+:::
+
+::: {.column width="50%"}
+
+
+
+:::::{.cell}
+
+```{.js .cell-code .hidden startFrom="857" source-offset="0"}
+g(currentSlope1,currentSlope2,2)
+```
+
+::::{.cell-output .cell-output-display}
+
+:::{#ojs-cell-7 nodetype="expression"}
+:::
+::::
+:::::
+
+
+:::
+
+::::
+
+::::
+
+
+
+:::::{.cell}
+
+```{.js .cell-code .hidden startFrom="865" source-offset="0"}
+viewof currentSlope1 = Inputs.range([-2, 5], {
+  label: "调整1斜率参数 (w)",
+  step: 0.1,
+  value: 1  // 初始值
+})
+```
+
+::::{.cell-output .cell-output-display}
+
+:::{#ojs-cell-8 nodetype="declaration"}
+:::
+::::
+:::::
+
+
+::::
+
+
+
+
+:::::{.cell}
+
+```{.js .cell-code .hidden startFrom="874" source-offset="0"}
+viewof currentSlope2 = Inputs.range([-2, 5], {
+  label: "调整截距参数 (w)",
+  step: 0.1,
+  value: 1  // 初始值
+})
+```
+
+::::{.cell-output .cell-output-display}
+
+:::{#ojs-cell-9 nodetype="declaration"}
+:::
+::::
+:::::
+
+
+ -->
+<!-- ## 什么是线性回归？
+
+- **目标**：拟合数据点的最佳直线  
+- **公式**：  
+  $$h_\theta(x) = \theta_0 + \theta_1 x$$  
+  其中 $\theta_0$ 是截距，$\theta_1$ 是斜率。
+
+---
+
+## 损失函数：均方误差（MSE）
+
+定义损失函数为：  
+$$J(\theta) = \frac{1}{2m} \sum_{i=1}^m (h_\theta(x^{(i)}) - y^{(i)})^2$$
+
+我们的目标是找到 $\theta_0, \theta_1$ 使得 $J(\theta)$ 最小化。
+
+--- -->
+<!-- ## 动态演示：参数优化 -->
+<!-- <iframe 
+  src="https://www.geogebra.org/classic/mqktnpbz?embed"
+  width="100%" 
+  height="600" 
+  frameborder="0"
+  allowfullscreen>
+</iframe> -->
+<!-- （拖动滑动条观察 $\theta_0$ 和 $\theta_1$ 对拟合直线的影响）
+
+---
+
+## Python 代码实现
+
+### 生成示例数据
+
+::: {#51966334 .cell execution_count=9}
+
+::: {.cell-output .cell-output-display}
+![](linear_regression_files/figure-revealjs/cell-10-output-1.png){width=808 height=429}
+:::
+:::
+
+
+### 训练线性回归模型114
+```python
+from sklearn.linear_model import LinearRegression
+
+model = LinearRegression()
+model.fit(X, y)
+print(f"截距 (θ0): {model.intercept_[0]:.2f}, 斜率 (θ1): {model.coef_[0][0]:.2f}")
+```
+
+---
+
+## 拟合结果可视化
+
+```python
+# 绘制拟合直线
+X_new = np.array([[0], [2]])
+y_pred = model.predict(X_new)
+
+plt.scatter(X, y)
+plt.plot(X_new, y_pred, "r-", linewidth=2)
+plt.title("线性回归拟合结果")
+plt.show()
+```
+
+---
+
+## 下一步学习
+
+- 梯度下降算法
+- 多元线性回归
+- 正则化（Lasso/Ridge） -->
+<!-- ```{python}
+# %pip install ipywidgets
+# %matplotlib inline
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import ticker, cm
+import seaborn as sns
+from ipywidgets import *
+import math
+
+sns.set_context('paper', font_scale=2)
+sns.set_style('ticks')
+def f_2d(x1, x2):
+    '''original function to minimize'''
+    return 0.1 * x1 ** 2 + 2 * x2 ** 2
+
+def f_grad(x1, x2):
+    '''the gradient dfdx1 and dfdx2'''
+    dfdx1 = 0.2 * x1
+    dfdx2 = 4 * x2
+    return dfdx1, dfdx2
+
+def train_2d(trainer, lr):
+    """Train a 2d object function with a customized trainer"""
+    x1, x2 = -5, -2
+    s_x1, s_x2 = 0, 0
+    res = [(x1, x2)]
+    for i in range(50):
+        x1, x2, s_x1, s_x2, lr = trainer(x1, x2, s_x1, s_x2, lr)
+        res.append((x1, x2))
+    return res
+
+def plot_2d(res, figsize=(10, 6), title=None):
+    x1_, x2_ = zip(*res)
+    fig = plt.figure(figsize=figsize)
+    plt.plot([0], [0], 'r*', ms=15)
+    plt.text(0.0, 0.25, 'minimum', color='w')
+    plt.plot(x1_[0], x2_[0], 'ro', ms=10)
+    plt.text(x1_[0]+0.1, x2_[0]+0.2, 'start', color='w')
+    plt.plot(x1_, x2_, '-o', color='#ff7f0e')
+    
+    plt.plot(x1_[-1], x2_[-1], 'wo')
+    plt.text(x1_[-1], x2_[-1]-0.25, 'end', color='w')
+    
+    x1 = np.linspace(-5.5, 3, 50)
+    x2 = np.linspace(min(-3.0, min(x2_) - 1), max(3.0, max(x2_) + 1), 100)
+    x1, x2 = np.meshgrid(x1, x2)
+    plt.contourf(x1, x2, f_2d(x1, x2), cmap=cm.gnuplot)
+    plt.xlabel('x1')
+    plt.ylabel('x2')
+    plt.title(title)
+    plt.show()
+
+def sgd(x1, x2, s1, s2, lr):
+    dfdx1, dfdx2 = f_grad(x1, x2)
+    return (x1 - lr * dfdx1, x2 - lr * dfdx2, 0, 0, lr)
+
+@interact(lr=(0, 1, 0.001))
+def visualize_gradient_descent(lr=0.05):
+    res = train_2d(sgd, lr)
+    plot_2d(res, title='SGD')
+
+``` -->
+
+
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'fade',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1600,
+
+        height: 900,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script type="ojs-module-contents">
+    eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6ImZ1bmN0aW9uIGYoY3VycmVudFNsb3BlLHQpIHtcbiAgXG4vLyDmlbDmja7pg6jliIZcbmNvbnN0IGRhdGEgPSBbXG4gIHt4OiAxLCB5OiAyfSxcbiAge3g6IDIsIHk6IDF9LFxuICB7eDogMywgeTogNH0sXG4gIHt4OiA0LCB5OiAzfVxuXVxuXG4vLyDkuqTkupLlvI/mu5HliqjmnaFcblxuXG4vLyDorqHnrpflh73mlbBcbmZ1bmN0aW9uIGdldFByZWRpY3Rpb25zKHNsb3BlKSB7XG4gIHJldHVybiBkYXRhLm1hcChkID0+ICh7Li4uZCwgeV9wcmVkOiBzbG9wZSAqIGQueH0pKVxufVxuXG5mdW5jdGlvbiBjb21wdXRlTG9zcyhzbG9wZSkge1xuICByZXR1cm4gZGF0YS5yZWR1Y2UoKHN1bSwgZCkgPT4gc3VtICsgKGQueSAtIHNsb3BlICogZC54KSoqMiwgMCkgLyBkYXRhLmxlbmd0aFxufVxuXG4vLyDlj4LmlbAt5o2f5aSx5puy57q/5pWw5o2uXG5jb25zdCBzbG9wZXMgPSBBcnJheS5mcm9tKHtsZW5ndGg6IDIwMH0sIChfLCBpKSA9PiAtMiArIGkgKiA3LzIwMClcbmNvbnN0IGxvc3NEYXRhID0gc2xvcGVzLm1hcChzID0+ICh7IHNsb3BlOiBzLCBsb3NzOiBjb21wdXRlTG9zcyhzKSB9KSlcblxuZnVuY3Rpb24gbWlkKHByZWQpIHtcbiAgICByZXR1cm4gZGF0YS5tYXAoKG51bSxpKT0+KHt4OihudW0ueCtwcmVkW2ldLngpLzIsIHk6KG51bS55K3ByZWRbaV0ueV9wcmVkKS8yLGdhcDpNYXRoLmFicyhudW0ueS1wcmVkW2ldLnlfcHJlZCl9KSlcbn1cbmxldCBtPW1pZChnZXRQcmVkaWN0aW9ucyhjdXJyZW50U2xvcGUpKVxuLy8g56ys5LiA5Liq5Zu+77ya5pWw5o2u54K55ZKM6aKE5rWL57q/XG5jb25zdCBwbG90MSA9IFBsb3QucGxvdCh7XG4gIG1hcmtzOiBbXG4gICAgIFBsb3QuZnJhbWUoKSxcbiAgICBQbG90LmRvdChkYXRhLCB7IFxuICAgICAgeDogXCJ4XCIsIFxuICAgICAgeTogXCJ5XCIsIFxuICAgICAgZmlsbDogXCJzdGVlbGJsdWVcIixcbiAgICAgIHI6IDRcbiAgICB9KSxcbiAgICBQbG90LmxpbmUoZ2V0UHJlZGljdGlvbnMoY3VycmVudFNsb3BlKS5jb25jYXQoW3t4OjAseV9wcmVkOjAqY3VycmVudFNsb3BlfSx7eDo1LHlfcHJlZDo1KmN1cnJlbnRTbG9wZX1dKSAse1xuICAgICAgeDogXCJ4XCIsXG4gICAgICB5OiBcInlfcHJlZFwiLFxuICAgICAgc3Ryb2tlOiBcIm9yYW5nZVwiLFxuICAgICAgc3Ryb2tlV2lkdGg6IDIsXG4gICAgfSksXG4gICAgXG4gICAgUGxvdC50ZXh0KG0se3g6XCJ4XCIseTpcInlcIix0ZXh0OihkKSA9PiBgJHtkLmdhcC50b0ZpeGVkKDIpfWAsZm9udFNpemU6MTYsZHg6MTh9KSxcbiAgICBQbG90LnRleHQoW1swLDBdXSx7ZHg6MjksZm9udFNpemU6MTYsdGV4dDpbYHk9JHtjdXJyZW50U2xvcGUudG9GaXhlZCgyKX14YF19KSxcbiAgICBQbG90LnRleHQoW1syLDddXSx7ZHg6MzAsZm9udFNpemU6MTYsdGV4dDpbIGBDb3N0PSgke21bMF0uZ2FwLnRvRml4ZWQoMil9XjIrJHttWzFdLmdhcC50b0ZpeGVkKDIpfV4yKyR7bVsyXS5nYXAudG9GaXhlZCgyKX1eMiske21bM10uZ2FwLnRvRml4ZWQoMil9XjIpLzQ9JHtjb21wdXRlTG9zcyhjdXJyZW50U2xvcGUpLnRvRml4ZWQoMil9YF19KSxcbiAgICBQbG90LnJ1bGVYKGRhdGEsIHtcbiAgICAgIHg6IFwieFwiLFxuICAgICAgeTE6IFwieVwiLFxuICAgICAgeTI6IGQgPT4gY3VycmVudFNsb3BlICogZC54LFxuICAgICAgc3Ryb2tlV2lkdGg6IDEuNSxcbiAgICAgIHN0cm9rZU9wYWNpdHk6IDAuNixcbiAgICB9KSxcbiAgICBQbG90LmF4aXNYKHtmb250U2l6ZToxNn0pXG4gIF0sXG4gIHN0eWxlOiB7Zm9udFNpemU6IFwiMTZweFwifSxcbiAgeDogeyBkb21haW46IFswLCA0LjldLCBsYWJlbDogXCJ4XCIsIH0sXG4gIHk6IHsgZG9tYWluOiBbLTIsIDcuOV0sIGxhYmVsOiBcInlcIiB9LFxuICB3aWR0aDogNjAwLFxuICBoZWlnaHQ6IDQwMCxcbiAgXG4gIC8vIHRpdGxlOiBtZGBkZiAkayRgXG4vLyAgIHRpdGxlOiBg5o2f5aSxPSgke21bMF0uZ2FwLnRvRml4ZWQoMil9XjIrJHttWzFdLmdhcC50b0ZpeGVkKDIpfV4yKyR7bVsyXS5nYXAudG9GaXhlZCgyKX1eMiske21bM10uZ2FwLnRvRml4ZWQoMil9XjIpLzQ9JHtjb21wdXRlTG9zcyhjdXJyZW50U2xvcGUpLnRvRml4ZWQoMil9YFxufSlcblxuLy8g56ys5LqM5Liq5Zu+77ya5o2f5aSx5Ye95pWw5puy57q/XG5jb25zdCBwbG90MiA9IFBsb3QucGxvdCh7XG4gIG1hcmtzOiBbXG4gICAgIFBsb3QuZnJhbWUoKSxcbiAgICBQbG90LmxpbmUobG9zc0RhdGEsIHtcbiAgICAgIHg6IFwic2xvcGVcIixcbiAgICAgIHk6IFwibG9zc1wiLFxuICAgICAgc3Ryb2tlOiBcIiM5ODRlYTNcIixcbiAgICAgIHN0cm9rZVdpZHRoOiAxLjVcbiAgICB9KSxcbiAgICBQbG90LmRvdChbeyBzbG9wZTogY3VycmVudFNsb3BlLCBsb3NzOiBjb21wdXRlTG9zcyhjdXJyZW50U2xvcGUpIH1dLCB7XG4gICAgICB4OiBcInNsb3BlXCIsXG4gICAgICB5OiBcImxvc3NcIixcbiAgICAgIGZpbGw6IFwiI2ZmN2YwMFwiLFxuICAgICAgcjogNlxuICAgIH0pLFxuICAgIFBsb3QuYXhpc1goe2ZvbnRTaXplOjE2fSlcbiAgXSxcbiAgc3R5bGU6IHtmb250U2l6ZTogXCIxNnB4XCJ9LFxuICB4OiB7IGRvbWFpbjogWy0yLCA1XSxsYWJlbDogXCLlj4LmlbAgKGspXCIgfSxcbiAgeTogeyBkb21haW46IFstMTAsIDEyNV0sbGFiZWw6IFwi5o2f5aSxIFwiIH0sXG4gIHdpZHRoOiA2MDAsXG4gIGhlaWdodDogNDAwXG59KVxuICBcblxuICBpZih0PT0xKSByZXR1cm4gcGxvdDFcbiAgZWxzZSByZXR1cm4gcGxvdDJcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMiIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6ImYoY3VycmVudFNsb3BlLDEpXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTMiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJmKGN1cnJlbnRTbG9wZSwyKVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC00IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoidmlld29mIGN1cnJlbnRTbG9wZSA9IElucHV0cy5yYW5nZShbLTIsIDVdLCB7XG4vLyAgIGxhYmVsOiBcIuiwg+aVtDHmlpznjoflj4LmlbAgKHcpXCIsXG4gIFxuICBzdGVwOiAwLjAxLFxuICB2YWx1ZTogMSAgLy8g5Yid5aeL5YC8XG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC01IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiZnVuY3Rpb24gZyhjdXJyZW50U2xvcGUxLGN1cnJlbnRTbG9wZTIsdCkge1xuICBcbi8vIOaVsOaNrumDqOWIhlxuY29uc3QgZGF0YSA9IFtcbiAge3g6IDEsIHk6IDJ9LFxuICB7eDogMiwgeTogMX0sXG4gIHt4OiAzLCB5OiA0fSxcbiAge3g6IDQsIHk6IDN9XG5dXG5cbi8vIOS6pOS6kuW8j+a7keWKqOadoVxuXG5cbi8vIOiuoeeul+WHveaVsFxuZnVuY3Rpb24gZ2V0UHJlZGljdGlvbnMoc2xvcGUxLHNsb3BlMikge1xuICByZXR1cm4gZGF0YS5tYXAoZCA9PiAoey4uLmQsIHlfcHJlZDogc2xvcGUxICogZC54K3Nsb3BlMn0pKVxufVxuXG5mdW5jdGlvbiBjb21wdXRlTG9zcyhzbG9wZTEsc2xvcGUyKSB7XG4gIHJldHVybiBkYXRhLnJlZHVjZSgoc3VtLCBkKSA9PiBzdW0gKyAoZC55IC0gc2xvcGUxICogZC54LXNsb3BlMikqKjIsIDApIC8gZGF0YS5sZW5ndGhcbn1cblxuLy8g5Y+C5pWwLeaNn+Wkseabsue6v+aVsOaNrlxuLy8gY29uc3Qgc2xvcGVzID0gQXJyYXkuZnJvbSh7bGVuZ3RoOiAyMDB9LCAoXywgaSkgPT4gLTIgKyBpICogNy8yMDApXG4vLyBjb25zdCBsb3NzRGF0YSA9IHNsb3Blcy5tYXAocyA9PiAoeyBzbG9wZTogcywgbG9zczogY29tcHV0ZUxvc3MocykgfSkpXG5cbi8vIOesrOS4gOS4quWbvu+8muaVsOaNrueCueWSjOmihOa1i+e6v1xuY29uc3QgcGxvdDEgPSBQbG90LnBsb3Qoe1xuICBtYXJrczogW1xuICAgIFBsb3QuZG90KGRhdGEsIHsgXG4gICAgICB4OiBcInhcIiwgXG4gICAgICB5OiBcInlcIiwgXG4gICAgICBmaWxsOiBcInN0ZWVsYmx1ZVwiLFxuICAgICAgcjogOCBcbiAgICB9KSxcbiAgICBQbG90LmxpbmUoZ2V0UHJlZGljdGlvbnMoY3VycmVudFNsb3BlMSxjdXJyZW50U2xvcGUyKSwge1xuICAgICAgeDogXCJ4XCIsXG4gICAgICB5OiBcInlfcHJlZFwiLFxuICAgICAgc3Ryb2tlOiBcIm9yYW5nZVwiLFxuICAgICAgc3Ryb2tlV2lkdGg6IDJcbiAgICB9KSxcbiAgICBQbG90LnJ1bGVYKGRhdGEsIHtcbiAgICAgIHg6IFwieFwiLFxuICAgICAgeTE6IFwieVwiLFxuICAgICAgeTI6IGQgPT4gY3VycmVudFNsb3BlMSAqIGQueCtjdXJyZW50U2xvcGUyLFxuICAgICAgc3Ryb2tlOiBkID0+IChkLnkgLSBjdXJyZW50U2xvcGUxICogZC54K2N1cnJlbnRTbG9wZTIpID4gMCA/IFwiIzRkYWY0YVwiIDogXCIjZTQxYTFjXCIsXG4gICAgICBzdHJva2VXaWR0aDogMixcbiAgICAgIHN0cm9rZU9wYWNpdHk6IDAuNlxuICAgIH0pXG4gIF0sXG4gIHg6IHsgZG9tYWluOiBbMCwgNV0sIGxhYmVsOiBcIui+k+WFpeeJueW+gSAoWClcIiB9LFxuICB5OiB7IGRvbWFpbjogWy0zLCA2XSwgbGFiZWw6IFwi55uu5qCH5YC8IChZKVwiIH0sXG4gIHdpZHRoOiA2MDAsXG4gIGhlaWdodDogMzAwLFxuLy8gICB0aXRsZTogYOW9k+WJjeWPguaVsDogdyA9ICR7Y3VycmVudFNsb3BlLnRvRml4ZWQoMil9IHwg5o2f5aSx5YC8OiAke2NvbXB1dGVMb3NzKGN1cnJlbnRTbG9wZSkudG9GaXhlZCgyKX1gXG59KVxuXG4vLyDnrKzkuozkuKrlm77vvJrmjZ/lpLHlh73mlbDmm7Lnur9cbmNvbnN0IHBsb3QyID0gUGxvdC5wbG90KHtcbiAgICBhc3BlY3RSYXRpbzogMSxcbiAgICBjb2xvcjoge1xuICAgICAgICB0eXBlOiBcImRpdmVyZ2luZ1wiLFxuICAgICAgICBsZWdlbmQ6IHRydWUsXG4gICAgICAgIGxhYmVsOiBcIkVsZXZhdGlvbiAobSlcIlxuICB9LFxuICBtYXJrczogW1xuICAgUGxvdC5jb250b3VyKHtcbiAgICAgICAgZmlsbDogY29tcHV0ZUxvc3MsXG4gICAgICAgIHN0cm9rZTogXCJibGFja1wiLFxuICAgICAgICB4MTogLTAuMCxcbiAgICAgICAgeDI6IDEuNyxcbiAgICAgICAgeTE6IC0yLFxuICAgICAgICB5MjogMi41XG4gICAgICAgIH0pLFxuICAgIFBsb3QuZG90KFt7IHNsb3BlOiBjdXJyZW50U2xvcGUxLCBsb3NzOiBjdXJyZW50U2xvcGUyIH1dLCB7XG4gICAgICB4OiBcInNsb3BlXCIsXG4gICAgICB5OiBcImxvc3NcIixcbiAgICAgIGZpbGw6IFwiI2ZmN2YwMFwiLFxuICAgICAgcjogNlxuICAgIH0pLFxuICAgUGxvdC50ZXh0KFt7XG4gIHg6IGN1cnJlbnRTbG9wZTEsXG4gIHk6IGN1cnJlbnRTbG9wZTIsXG4gIHRleHQ6IGAoJHtjdXJyZW50U2xvcGUxLnRvRml4ZWQoMSl9LCAke2N1cnJlbnRTbG9wZTIudG9GaXhlZCgxKX0sJHtjb21wdXRlTG9zcyhjdXJyZW50U2xvcGUxLGN1cnJlbnRTbG9wZTIpLnRvRml4ZWQoMil9KWAsXG4gIC8vIGR4OiBjdXJyZW50U2xvcGUxID4gOCA/IC00MCA6IDEyLCAvLyDpnaDov5Hlj7PovrnnlYzml7blt6bnp7vmlofmnKxcbiAgLy8gZHk6IGN1cnJlbnRTbG9wZTIgPiA4ID8gMTAgOiAtOCAgIC8vIOmdoOi/keS4iui+ueeVjOaXtuS4i+enu+aWh+acrFxufV0sIHt4OlwieFwiLHk6XCJ5XCIsdGV4dDogKGQpID0+IGQudGV4dCxcbiAgZHk6IC02XG59KVxuICBdLFxuICB4OiB7IGxhYmVsOiBcIuaWnOeOh+WPguaVsCAodylcIiB9LFxuICB5OiB7IGxhYmVsOiBcIuWdh+aWueivr+W3ruaNn+WksSAoTVNFKVwiIH0sXG4gIHdpZHRoOiA3MDAsXG4gIGhlaWdodDogNTAwXG59KVxuICBcblxuICBpZih0PT0xKSByZXR1cm4gcGxvdDFcbiAgZWxzZSByZXR1cm4gcGxvdDJcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNiIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6ImcoY3VycmVudFNsb3BlMSxjdXJyZW50U2xvcGUyLDEpXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTciLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJnKGN1cnJlbnRTbG9wZTEsY3VycmVudFNsb3BlMiwyKVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC04IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoidmlld29mIGN1cnJlbnRTbG9wZTEgPSBJbnB1dHMucmFuZ2UoWy0yLCA1XSwge1xuICBsYWJlbDogXCLosIPmlbQx5pac546H5Y+C5pWwICh3KVwiLFxuICBzdGVwOiAwLjEsXG4gIHZhbHVlOiAxICAvLyDliJ3lp4vlgLxcbn0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTkiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ2aWV3b2YgY3VycmVudFNsb3BlMiA9IElucHV0cy5yYW5nZShbLTIsIDVdLCB7XG4gIGxhYmVsOiBcIuiwg+aVtOaIqui3neWPguaVsCAodylcIixcbiAgc3RlcDogMC4xLFxuICB2YWx1ZTogMSAgLy8g5Yid5aeL5YC8XG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJzaGlueUlucHV0KCdjdXJyZW50U2xvcGUnKSJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoic2hpbnlJbnB1dCgnY3VycmVudFNsb3BlMScpIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJzaGlueUlucHV0KCdjdXJyZW50U2xvcGUyJykifV19
+    </script>
+    <script type="module">
+    if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+    window._ojs.paths.runtimeToDoc = "../..";
+    window._ojs.paths.runtimeToRoot = "../..";
+    window._ojs.paths.docToRoot = "";
+    window._ojs.selfContained = false;
+    window._ojs.runtime.interpretFromScriptTags();
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+        }
+      }
+      const toggleBodyColorPrimary = () => {
+        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+        if (bsSheetEl) {
+          toggleBodyColorMode(bsSheetEl);
+        }
+      }
+      toggleBodyColorPrimary();  
+      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+      tabsets.forEach(function(tabset) {
+        const tabby = new Tabby('#' + tabset.id);
+      });
+      const isCodeAnnotation = (el) => {
+        for (const clz of el.classList) {
+          if (clz.startsWith('code-annotation-')) {                     
+            return true;
+          }
+        }
+        return false;
+      }
+      const onCopySuccess = function(e) {
+        // button target
+        const button = e.trigger;
+        // don't keep focus
+        button.blur();
+        // flash "checked"
+        button.classList.add('code-copy-button-checked');
+        var currentTitle = button.getAttribute("title");
+        button.setAttribute("title", "Copied!");
+        let tooltip;
+        if (window.bootstrap) {
+          button.setAttribute("data-bs-toggle", "tooltip");
+          button.setAttribute("data-bs-placement", "left");
+          button.setAttribute("data-bs-title", "Copied!");
+          tooltip = new bootstrap.Tooltip(button, 
+            { trigger: "manual", 
+              customClass: "code-copy-button-tooltip",
+              offset: [0, -8]});
+          tooltip.show();    
+        }
+        setTimeout(function() {
+          if (tooltip) {
+            tooltip.hide();
+            button.removeAttribute("data-bs-title");
+            button.removeAttribute("data-bs-toggle");
+            button.removeAttribute("data-bs-placement");
+          }
+          button.setAttribute("title", currentTitle);
+          button.classList.remove('code-copy-button-checked');
+        }, 1000);
+        // clear code selection
+        e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
+      });
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
+        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+        var mailtoRegex = new RegExp(/^mailto:/);
+          var filterRegex = new RegExp('/' + window.location.host + '/');
+        var isInternal = (href) => {
+            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+        }
+        // Inspect non-navigation links and adorn them if external
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+        for (var i=0; i<links.length; i++) {
+          const link = links[i];
+          if (!isInternal(link.href)) {
+            // undo the damage that might have been done by quarto-nav.js in the case of
+            // links that we want to consider external
+            if (link.dataset.originalHref !== undefined) {
+              link.href = link.dataset.originalHref;
+            }
+          }
+        }
+      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+        const config = {
+          allowHTML: true,
+          maxWidth: 500,
+          delay: 100,
+          arrow: false,
+          appendTo: function(el) {
+              return el.closest('section.slide') || el.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'light-border',
+          placement: 'bottom-start',
+        };
+        if (contentFn) {
+          config.content = contentFn;
+        }
+        if (onTriggerFn) {
+          config.onTrigger = onTriggerFn;
+        }
+        if (onUntriggerFn) {
+          config.onUntrigger = onUntriggerFn;
+        }
+          config['offset'] = [0,0];
+          config['maxWidth'] = 700;
+        window.tippy(el, config); 
+      }
+      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+      for (var i=0; i<noterefs.length; i++) {
+        const ref = noterefs[i];
+        tippyHover(ref, function() {
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+          try { href = new URL(href).hash; } catch {}
+          const id = href.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note) {
+            return note.innerHTML;
+          } else {
+            return "";
+          }
+        });
+      }
+      const findCites = (el) => {
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const cites = parentEl.dataset.cites;
+          if (cites) {
+            return {
+              el,
+              cites: cites.split(' ')
+            };
+          } else {
+            return findCites(el.parentElement)
+          }
+        } else {
+          return undefined;
+        }
+      };
+      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+      for (var i=0; i<bibliorefs.length; i++) {
+        const ref = bibliorefs[i];
+        const citeInfo = findCites(ref);
+        if (citeInfo) {
+          tippyHover(citeInfo.el, function() {
+            var popup = window.document.createElement('div');
+            citeInfo.cites.forEach(function(cite) {
+              var citeDiv = window.document.createElement('div');
+              citeDiv.classList.add('hanging-indent');
+              citeDiv.classList.add('csl-entry');
+              var biblioDiv = window.document.getElementById('ref-' + cite);
+              if (biblioDiv) {
+                citeDiv.innerHTML = biblioDiv.innerHTML;
+              }
+              popup.appendChild(citeDiv);
+            });
+            return popup.innerHTML;
+          });
+        }
+      }
+    });
+    </script>
+    
+
+</body></html>
